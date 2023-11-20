@@ -4,6 +4,6 @@
 #include <stdio.h>
 
 int main(){
-    printf("coucou, je m'appelle Hugo");
+    printf("coucou, je m'appelle Hugo,jsuis gay");
     return 0;
 }
