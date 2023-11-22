@@ -18,6 +18,5 @@ int main(){
         printf("%s", tableau);
     }
     fclose(fichier);
-    printf("coucou");
     return 0;
 }
