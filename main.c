@@ -4,6 +4,19 @@
 #include <stdio.h>
 
 int main(){
-    printf("coucou");
+
+    FILE*fichier;
+
+    char exclusion[]= "exclusions.txt.txt";
+    char tableau[100];
+    fichier = fopen(exclusion, "r");
+    if(fichier == NULL){
+        perror("erreur ouverture");
+        return -1;
+    }
+    while(fgets(tableau, 1000, fichier)!= NULL){
+        printf("%s", tableau);
+    }
+    fclose(fichier);
     return 0;
 }
