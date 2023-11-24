@@ -42,3 +42,13 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
         }
     }
 }
+
+
+
+/ Fonction pour imprimer la répartition des opérations sur les stations
+void afficherAffectations(int affectations[], int nombreNoeuds) {
+    printf("Repartition des operations sur les stations:\n");
+    for (int i = 0; i < nombreNoeuds; i++) {
+        printf("Operation %d : Station %d\n", i + 1, affectations[i]);
+    }
+}
