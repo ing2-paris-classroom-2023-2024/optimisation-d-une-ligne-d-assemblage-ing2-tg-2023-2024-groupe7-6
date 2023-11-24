@@ -35,3 +35,10 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
             }
         }
 
+// Si la station est autorisée, l'attribuer à l'opération
+        if (stationAutorisee && peutAffecter(matriceAdjacence, affectations, op, station, nombreNoeuds)) {
+            affectations[op] = station;
+            break;
+        }
+    }
+}
