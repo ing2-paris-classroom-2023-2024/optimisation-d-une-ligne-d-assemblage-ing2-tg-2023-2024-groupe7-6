@@ -52,3 +52,62 @@ void afficherAffectations(int affectations[], int nombreNoeuds) {
         printf("Operation %d : Station %d\n", i + 1, affectations[i]);
     }
 }
+
+
+
+int main() {
+    int nombreNoeuds;
+    printf("Entrez le nombre total de noeuds (operations) : ");
+    scanf("%d", &nombreNoeuds);
+
+    // Initialisation de la matrice d'adjacence
+    int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS] = {{0}};
+
+    // Saisie des arêtes du graphe depuis la console
+    printf("Saisissez les aretes du graphe (noeud1 noeud2, -1 pour terminer) :\n");
+    int noeud1, noeud2;
+    while (1) {
+        scanf("%d %d", &noeud1, &noeud2);
+        if (noeud1 == -1 || noeud2 == -1) {
+            break;
+        }
+        matriceAdjacence[noeud1 - 1][noeud2 - 1] = 1;
+        matriceAdjacence[noeud2 - 1][noeud1 - 1] = 1;
+    }
+
+    // Saisie du nom du fichier contenant les contraintes d'exclusion
+    char nomFichier[MAX_NOM_FICHIER];
+    printf("Entrez le nom du fichier contenant les contraintes d'exclusion : ");
+    scanf("%s", nomFichier);
+
+    // Lecture des contraintes d'exclusion depuis le fichier
+    FILE *fichierContraintes = fopen(nomFichier, "r");
+    if (fichierContraintes == NULL) {
+        perror("Erreur lors de l'ouverture du fichier de contraintes");
+        return 1;
+    }
+
+    // Tableau pour suivre les stations attribuées à chaque opération
+    int affectations[MAX_NOEUDS] = {0};
+
+    // Tableau pour stocker les contraintes d'exclusion
+    int contraintes[MAX_CONTRAINTES][2] = {{0}};
+    int nombreContraintes = 0;
+
+    // Boucle pour lire les contraintes d'exclusion depuis le fichier
+    while (fscanf(fichierContraintes, "%d %d", &contraintes[nombreContraintes][0], &contraintes[nombreContraintes][1]) == 2) {
+        nombreContraintes++;
+    }
+
+    fclose(fichierContraintes);
+
+    // Boucle pour attribuer les stations aux opérations en tenant compte des contraintes d'exclusion
+    for (int op = 0; op < nombreNoeuds; op++) {
+        attribuerStation(matriceAdjacence, affectations, op, nombreNoeuds, contraintes, nombreContraintes);
+    }
+
+    // Affichage des stations attribuées aux nœuds (opérations)
+    afficherAffectations(affectations, nombreNoeuds);
+
+    return 0;
+}
