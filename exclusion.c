@@ -22,3 +22,16 @@ bool sontExclues(int contraintes[MAX_CONTRAINTES][2], int op1, int op2, int nomb
     return false;
 }
 
+// Fonction pour attribuer une station à une opération
+void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int op, int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
+    for (int station = 0; station < MAX_NOEUDS; station++) {
+        // Vérifier si la station est autorisée pour cette opération en fonction des contraintes
+        bool stationAutorisee = true;
+        for (int i = 0; i < nombreNoeuds; i++) {
+            // Vérifier si les opérations sont exclues l'une de l'autre
+            if (sontExclues(contraintes, op, i, nombreContraintes) && station == affectations[i]) {
+                stationAutorisee = false;
+                break;
+            }
+        }
+
