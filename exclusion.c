@@ -10,3 +10,15 @@ bool peutAffecter(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations
     }
     return true;
 }
+
+// Fonction pour vérifier si deux opérations sont exclues de la même station
+bool sontExclues(int contraintes[MAX_CONTRAINTES][2], int op1, int op2, int nombreContraintes) {
+    for (int i = 0; i < nombreContraintes; i++) {
+        if ((contraintes[i][0] == op1 && contraintes[i][1] == op2) ||
+            (contraintes[i][0] == op2 && contraintes[i][1] == op1)) {
+            return true; // Les opérations sont exclues l'une de l'autre
+        }
+    }
+    return false;
+}
+
