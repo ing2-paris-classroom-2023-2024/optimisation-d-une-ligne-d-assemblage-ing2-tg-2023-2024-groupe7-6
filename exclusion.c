@@ -1,6 +1,13 @@
 //
 // Created by rolho on 20/11/2023.
 //
+#include <stdbool.h>
+#include <stdio.h>
+
+#define MAX_NOEUDS 35
+#define MAX_CONTRAINTES 21
+#define MAX_NOM_FICHIER 256
+
 // Fonction pour vérifier si deux opérations peuvent être affectées à la même station
 bool peutAffecter(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int op, int station, int nombreNoeuds) {
     for (int i = 0; i < nombreNoeuds; i++) {
@@ -35,7 +42,7 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
             }
         }
 
-// Si la station est autorisée, l'attribuer à l'opération
+        // Si la station est autorisée, l'attribuer à l'opération
         if (stationAutorisee && peutAffecter(matriceAdjacence, affectations, op, station, nombreNoeuds)) {
             affectations[op] = station;
             break;
@@ -43,37 +50,43 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
     }
 }
 
-
-
-/ Fonction pour imprimer la répartition des opérations sur les stations
-void afficherAffectations(int affectations[], int nombreNoeuds) {
+// Fonction pour imprimer la répartition des opérations sur les stations
+void afficherAffectations(int affectations[], int nombreNoeuds, int nombreStations) {
     printf("Repartition des operations sur les stations:\n");
-    for (int i = 0; i < nombreNoeuds; i++) {
-        printf("Operation %d : Station %d\n", i + 1, affectations[i]);
+    for (int station = 0; station < nombreStations; station++) {
+        printf("Station %d -> ", station);
+        for (int i = 0; i < nombreNoeuds; i++) {
+            if (affectations[i] == station) {
+                printf("Op%d ", i + 1);
+            }
+        }
+        printf("\n");
     }
 }
 
-
-
 int main() {
-    int nombreNoeuds;
-    printf("Entrez le nombre total de noeuds (operations) : ");
-    scanf("%d", &nombreNoeuds);
+    int nombreNoeuds = MAX_NOEUDS; // Directement défini à 35
 
     // Initialisation de la matrice d'adjacence
     int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS] = {{0}};
 
-    // Saisie des arêtes du graphe depuis la console
-    printf("Saisissez les aretes du graphe (noeud1 noeud2, -1 pour terminer) :\n");
+    // Lecture des arêtes du graphe depuis le fichier
+    FILE *fichierGrapheAretes = fopen("graphe.txt", "r");
+    if (fichierGrapheAretes == NULL) {
+        perror("Erreur lors de l'ouverture du fichier graphe.txt");
+        return 1;
+    }
+
     int noeud1, noeud2;
     while (1) {
-        scanf("%d %d", &noeud1, &noeud2);
-        if (noeud1 == -1 || noeud2 == -1) {
+        if (fscanf(fichierGrapheAretes, "%d %d", &noeud1, &noeud2) != 2) {
             break;
         }
         matriceAdjacence[noeud1 - 1][noeud2 - 1] = 1;
         matriceAdjacence[noeud2 - 1][noeud1 - 1] = 1;
     }
+
+    fclose(fichierGrapheAretes);
 
     // Saisie du nom du fichier contenant les contraintes d'exclusion
     char nomFichier[MAX_NOM_FICHIER];
@@ -102,12 +115,18 @@ int main() {
     fclose(fichierContraintes);
 
     // Boucle pour attribuer les stations aux opérations en tenant compte des contraintes d'exclusion
+    int nombreStations = 0;
     for (int op = 0; op < nombreNoeuds; op++) {
         attribuerStation(matriceAdjacence, affectations, op, nombreNoeuds, contraintes, nombreContraintes);
+        if (affectations[op] >= nombreStations) {
+            nombreStations = affectations[op] + 1;
+        }
     }
 
     // Affichage des stations attribuées aux nœuds (opérations)
-    afficherAffectations(affectations, nombreNoeuds);
+    afficherAffectations(affectations, nombreNoeuds, nombreStations);
 
     return 0;
+
+
 }
