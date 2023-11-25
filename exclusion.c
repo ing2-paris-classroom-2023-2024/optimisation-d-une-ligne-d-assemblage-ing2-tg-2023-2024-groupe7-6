@@ -30,8 +30,8 @@ bool sontExclues(int contraintes[MAX_CONTRAINTES][2], int op1, int op2, int nomb
 }
 
 // Fonction pour attribuer une station à une opération
-void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int op, int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
-    for (int station = 0; station < MAX_NOEUDS; station++) {
+void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int couleurs[], int op, int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
+    for (int station = 0; station < 3; station++) {  // Utilisation de 3 stations
         // Vérifier si la station est autorisée pour cette opération en fonction des contraintes
         bool stationAutorisee = true;
         for (int i = 0; i < nombreNoeuds; i++) {
@@ -45,8 +45,35 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
         // Si la station est autorisée, l'attribuer à l'opération
         if (stationAutorisee && peutAffecter(matriceAdjacence, affectations, op, station, nombreNoeuds)) {
             affectations[op] = station;
+            couleurs[op] = station;  // Utilisation de la couleur pour la station
             break;
         }
+    }
+}
+
+// Fonction pour effectuer la coloration du graphe
+void colorationGraphe(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int couleurs[], int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
+    // Initialiser les couleurs à -1 (non attribuées)
+    for (int i = 0; i < nombreNoeuds; i++) {
+        couleurs[i] = -1;
+    }
+
+    // Algorithme de coloration de Welsh-Powell
+    for (int i = 0; i < nombreNoeuds; i++) {
+        if (couleurs[i] == -1) {
+            couleurs[i] = i;  // Attribuer une couleur à un nœud non coloré
+            for (int j = i + 1; j < nombreNoeuds; j++) {
+                if (couleurs[j] == -1 && !matriceAdjacence[i][j]) {
+                    // Si le nœud j n'est pas coloré et n'est pas adjacent au nœud i, lui attribuer la même couleur
+                    couleurs[j] = i;
+                }
+            }
+        }
+    }
+
+    // Attribuer les stations aux opérations en fonction des couleurs
+    for (int op = 0; op < nombreNoeuds; op++) {
+        attribuerStation(matriceAdjacence, affectations, couleurs, op, nombreNoeuds, contraintes, nombreContraintes);
     }
 }
 
@@ -114,19 +141,14 @@ int main() {
 
     fclose(fichierContraintes);
 
-    // Boucle pour attribuer les stations aux opérations en tenant compte des contraintes d'exclusion
-    int nombreStations = 0;
-    for (int op = 0; op < nombreNoeuds; op++) {
-        attribuerStation(matriceAdjacence, affectations, op, nombreNoeuds, contraintes, nombreContraintes);
-        if (affectations[op] >= nombreStations) {
-            nombreStations = affectations[op] + 1;
-        }
-    }
+    // Tableau pour stocker les couleurs attribuées à chaque nœud
+    int couleurs[MAX_NOEUDS];
+
+    // Appliquer la coloration du graphe
+    colorationGraphe(matriceAdjacence, affectations, couleurs, nombreNoeuds, contraintes, nombreContraintes);
 
     // Affichage des stations attribuées aux nœuds (opérations)
-    afficherAffectations(affectations, nombreNoeuds, nombreStations);
+    afficherAffectations(affectations, nombreNoeuds, 3);  // Utilisation de 3 stations
 
     return 0;
-
-
 }
