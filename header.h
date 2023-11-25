@@ -1,7 +1,11 @@
+//
+// Created by Hugo on 25/11/2023.
+//
 
-#ifndef PROJET_ING_2_HEADER_H
-#define PROJET_ING_2_HEADER_H
-
+#ifndef PROJET_INGE2_HEADER_H
+#define PROJET_INGE2_HEADER_H
+#define MAX_STATIONS 20
+#define MAX_OPERATIONS 100
 
 //Structure pour stocker les informations sur chaque opération
 typedef struct
@@ -16,6 +20,4 @@ typedef struct
     int numero;
     double temps_occupe;
 }t_Station;
-
-
-#endif //PROJET_ING_2_HEADER_H
+#endif //PROJET_INGE2_HEADER_H
