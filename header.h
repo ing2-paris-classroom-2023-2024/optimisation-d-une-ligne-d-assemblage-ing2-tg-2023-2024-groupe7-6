@@ -5,7 +5,7 @@
 #ifndef PROJET_INGE2_HEADER_H
 #define PROJET_INGE2_HEADER_H
 #define MAX_STATIONS 20
-#define MAX_OPERATIONS 100
+#define MAX_OPERATIONS 150
 
 //Structure pour stocker les informations sur chaque opération
 typedef struct
