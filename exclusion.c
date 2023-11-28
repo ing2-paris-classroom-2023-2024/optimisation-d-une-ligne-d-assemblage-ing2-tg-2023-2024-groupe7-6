@@ -7,6 +7,7 @@
 #define MAX_NOEUDS 35
 #define MAX_CONTRAINTES 21
 #define MAX_NOM_FICHIER 256
+#define NOMBRE_STATIONS 2
 
 // Fonction pour vérifier si deux opérations peuvent être affectées à la même station
 bool peutAffecter(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int op, int station, int nombreNoeuds) {
@@ -29,9 +30,36 @@ bool sontExclues(int contraintes[MAX_CONTRAINTES][2], int op1, int op2, int nomb
     return false;
 }
 
+// Fonction pour compter le nombre d'arêtes liées à chaque nœud
+void compterAretes(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int nombreNoeuds, int degres[]) {
+    for (int i = 0; i < nombreNoeuds; i++) {
+        degres[i] = 0;
+        for (int j = 0; j < nombreNoeuds; j++) {
+            if (matriceAdjacence[i][j]) {
+                degres[i]++;
+            }
+        }
+    }
+}
+
+// Fonction pour trouver le nœud d'ordre le plus élevé
+int trouverNoeudMaxDegre(int degres[], bool visite[], int nombreNoeuds) {
+    int maxDegre = -1;
+    int noeudMaxDegre = -1;
+
+    for (int i = 0; i < nombreNoeuds; i++) {
+        if (!visite[i] && degres[i] > maxDegre) {
+            maxDegre = degres[i];
+            noeudMaxDegre = i;
+        }
+    }
+
+    return noeudMaxDegre;
+}
+
 // Fonction pour attribuer une station à une opération
 void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int couleurs[], int op, int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
-    for (int station = 0; station < 3; station++) {  // Utilisation de 3 stations
+    for (int station = 0; station < NOMBRE_STATIONS; station++) {  // Utilisation de NOMBRE_STATIONS stations
         // Vérifier si la station est autorisée pour cette opération en fonction des contraintes
         bool stationAutorisee = true;
         for (int i = 0; i < nombreNoeuds; i++) {
@@ -51,24 +79,30 @@ void attribuerStation(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectat
     }
 }
 
-// Fonction pour effectuer la coloration du graphe
-void colorationGraphe(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int couleurs[], int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
-    // Initialiser les couleurs à -1 (non attribuées)
-    for (int i = 0; i < nombreNoeuds; i++) {
-        couleurs[i] = -1;
-    }
+// Fonction pour effectuer la coloration du graphe en utilisant l'algorithme de Welsh-Powell
+void colorationGrapheWelshPowell(int matriceAdjacence[MAX_NOEUDS][MAX_NOEUDS], int affectations[], int couleurs[], int nombreNoeuds, int contraintes[MAX_CONTRAINTES][2], int nombreContraintes) {
+    int degres[MAX_NOEUDS];
+    bool visite[MAX_NOEUDS] = {false};
 
-    // Algorithme de coloration de Welsh-Powell
-    for (int i = 0; i < nombreNoeuds; i++) {
-        if (couleurs[i] == -1) {
-            couleurs[i] = i;  // Attribuer une couleur à un nœud non coloré
-            for (int j = i + 1; j < nombreNoeuds; j++) {
-                if (couleurs[j] == -1 && !matriceAdjacence[i][j]) {
-                    // Si le nœud j n'est pas coloré et n'est pas adjacent au nœud i, lui attribuer la même couleur
-                    couleurs[j] = i;
-                }
+    // Compter le nombre d'arêtes liées à chaque nœud
+    compterAretes(matriceAdjacence, nombreNoeuds, degres);
+
+    // Algorithme de Welsh-Powell
+    for (int k = 0; k < nombreNoeuds; k++) {
+        int noeud = trouverNoeudMaxDegre(degres, visite, nombreNoeuds);
+
+        // Attribuer une couleur au nœud
+        couleurs[noeud] = noeud;
+
+        // Mettre à jour les degrés des nœuds adjacents
+        for (int i = 0; i < nombreNoeuds; i++) {
+            if (matriceAdjacence[noeud][i]) {
+                degres[i]--;
             }
         }
+
+        // Marquer le nœud comme visité
+        visite[noeud] = true;
     }
 
     // Attribuer les stations aux opérations en fonction des couleurs
@@ -144,11 +178,11 @@ int main() {
     // Tableau pour stocker les couleurs attribuées à chaque nœud
     int couleurs[MAX_NOEUDS];
 
-    // Appliquer la coloration du graphe
-    colorationGraphe(matriceAdjacence, affectations, couleurs, nombreNoeuds, contraintes, nombreContraintes);
+    // Appliquer la coloration du graphe en utilisant l'algorithme de Welsh-Powell
+    colorationGrapheWelshPowell(matriceAdjacence, affectations, couleurs, nombreNoeuds, contraintes, nombreContraintes);
 
     // Affichage des stations attribuées aux nœuds (opérations)
-    afficherAffectations(affectations, nombreNoeuds, 3);  // Utilisation de 3 stations
+    afficherAffectations(affectations, nombreNoeuds, NOMBRE_STATIONS);  // Utilisation de NOMBRE_STATIONS stations
 
     return 0;
 }
