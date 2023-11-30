@@ -1,0 +1,51 @@
+#include <stdio.h>
+
+#define N 35 // Nombre total de tâches
+
+// Structure pour une tâche
+struct Tache {
+    int duree; // Durée de la tâche
+    int prerequis[N]; // Tâches qui doivent être terminées avant cette tâche
+    int nombrePrerequis; // Nombre de prérequis pour cette tâche
+};
+
+// Fonction pour calculer le nombre de jours nécessaires
+int calculerJours(struct Tache taches[]) {
+    int jours = 0;
+    int tachesTerminees[N] = {0};
+
+    for (int i = 0; i < N; i++) {
+        // Vérifiez si tous les prérequis sont satisfaits
+        for (int j = 0; j < taches[i].nombrePrerequis; j++) {
+            if (!tachesTerminees[taches[i].prerequis[j]]) {
+                // Si un prérequis n'est pas terminé, sautez cette tâche pour le moment
+                continue;
+            }
+        }
+
+        // Si tous les prérequis sont terminés, ajoutez la durée de la tâche aux jours totaux
+        jours += taches[i].duree;
+        tachesTerminees[i] = 1; // Marquez cette tâche comme terminée
+    }
+
+    return jours;
+}
+
+//Graphe *liretempsgraphre()
+
+int main() {
+    struct Tache taches[N] = {
+            {50, {0}, 0}, // A - Recherche d'un local
+            {45, {0}, 0}, // B - Recherche d'un franchisé
+            // ... Initialiser toutes les autres tâches ici ...
+            {1, {0, 1, 2, /* ... tous les indices des autres tâches ... */}, N-1} // N - Inauguration du magasin
+    };
+
+    // Ajouter les dépendances ici
+
+    int totalJours = calculerJours(taches);
+    printf("Nombre total de jours nécessaires : %d\n", totalJours);
+
+
+    return 0;
+}
