@@ -122,6 +122,5 @@ int main() {
     // Libérer la mémoire et autres tâches de nettoyage ici si nécessaire
 
     return 0;
-
-
+    
 }
