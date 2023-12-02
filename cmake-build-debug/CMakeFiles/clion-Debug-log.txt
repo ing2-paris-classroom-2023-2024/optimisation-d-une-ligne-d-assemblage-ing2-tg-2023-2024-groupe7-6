@@ -30,6 +30,6 @@ This warning is for project developers.  Use -Wno-dev to suppress it.
 -- Check for working CXX compiler: C:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/bin/g++.exe - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Configuring done (3.3s)
+-- Configuring done (3.1s)
 -- Generating done (0.0s)
 -- Build files have been written to: C:/Users/Hugo/CLionProjects/optimisation-d-une-ligne-d-assemblage-ing2-tg-2023-2024-groupe7-6/cmake-build-debug
