@@ -1,0 +1,29 @@
+void trouverCheminCritique(Tache taches[], int nbTaches) {
+    double plusLongChemin[MAX_NOEUDS] = {0};
+    int predecesseurs[MAX_NOEUDS] = {0};
+
+    for (int i = 0; i < nbTaches; i++) {
+        if (plusLongChemin[taches[i].fin] < plusLongChemin[taches[i].debut] + taches[i].duree) {
+            plusLongChemin[taches[i].fin] = plusLongChemin[taches[i].debut] + taches[i].duree;
+            predecesseurs[taches[i].fin] = taches[i].debut;
+        }
+    }
+
+    // Trouver le dernier nœud
+    double dureeMax = 0;
+    int dernierNoeud = 0;
+    for (int i = 0; i < MAX_NOEUDS; i++) {
+        if (plusLongChemin[i] > dureeMax) {
+            dureeMax = plusLongChemin[i];
+            dernierNoeud = i;
+        }
+    }
+
+    // Retracer le chemin critique
+    printf("Chemin critique (en sens inverse) : ");
+    while (dernierNoeud != 0) {
+        printf("%d ", dernierNoeud);
+        dernierNoeud = predecesseurs[dernierNoeud];
+    }
+    printf("\nDurée totale : %f\n", dureeMax);
+}
