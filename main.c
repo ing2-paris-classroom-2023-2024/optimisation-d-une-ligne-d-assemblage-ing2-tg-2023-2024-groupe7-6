@@ -120,6 +120,53 @@ int main() {
     afficherPredecesseurs(graphe);
 
     // Libérer la mémoire et autres tâches de nettoyage ici si nécessaire
+#include <stdio.h>
+#include "projet.h"
+
+    int main(void){
+        int nbre_operations=0;
+        int nb_op_max=0;
+        int nv_stations=0;
+
+        nbre_operations=nb_operations("../operations.txt");
+        nb_op_max=num_operation_max("../operations.txt");
+
+        printf("operations maximum :%d\n",nb_op_max);
+
+        t_graphe *graphe1=creer_graphe(nb_op_max);
+        t_graphe *graphe_exclu_temps;
+
+        graphe1->tab_operations_reelles=creation_tab_op_reelles("../operations.txt", graphe1);
+
+        graphe1=fichier_exclusion("../exclusions.txt", graphe1);
+        graphe1->nb_stations=nb_mini_stations_exclu(graphe1);
+
+        t_graphe *stations_excl=creation_graphe_stations_exclusion(graphe1,"../operations.txt","../temps_cycle.txt");
+
+        printf("\nTemps de cycle : %.2f\n",stations_excl->temps_cycle);
+
+        //Affichage_stations(stations_excl);
+        nv_stations=nb_nv_stations_necessaires_exclusion_temps(stations_excl);
+
+        t_graphe *mix_exclu_temps=creation_stations_temps_exclusion(stations_excl, nv_stations);
+
+        stations_excl->nb_stations=graphe1->nb_stations;
+        mix_exclu_temps->nb_stations=stations_excl->nb_stations+nv_stations;
+
+        printf("Nouvelles stations:%d\n",nv_stations);
+        printf("Temps de cycle graphe mix: %.2f\n",mix_exclu_temps->temps_cycle);
+
+        Affichage_stations(mix_exclu_temps);
+        mix_exclu_temps=associer_operations_exclusion_temps(mix_exclu_temps,nv_stations);
+        Affichage_stations(mix_exclu_temps);
+        free(graphe1->tab_operations_reelles);
+        liberation_memoire_graphe_stations(stations_excl);
+        libeartion_memoire_graphe_contraintes(graphe1);
+
+        return 0;
+    }
+
+
 
     return 0;
     
